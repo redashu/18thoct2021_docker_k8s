@@ -24,3 +24,7 @@
 
 <img src="cnavm.png">
 
+### vm limitations
+
+<img src="vmlimit.png">
+
