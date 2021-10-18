@@ -1,1 +1,4 @@
-# 18thoct2021_docker_k8s
+# Plan of training 
+
+<img src="plan.png">
+
