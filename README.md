@@ -221,5 +221,88 @@ alpine        latest    14119a10abf4   7 weeks ago   5.6MB
 <img src="life.png">
 
 
+### creating first container 
+
+<img src="contc.png">
+
+### list of running container 
+
+```
+[ashu@ip-172-31-19-234 ~]$ docker  ps
+CONTAINER ID   IMAGE           COMMAND            CREATED          STATUS          PORTS     NAMES
+8eb5986713f2   alpine:latest   "ping localhost"   19 seconds ago   Up 17 seconds             ashuc1
+
+```
+
+### to remove a non running container 
+
+```
+[ashu@ip-172-31-19-234 ~]$ docker  rm 921ea12b3457
+921ea12b3457
+
+```
+
+### output of a running container 
+
+```
+  31  docker  logs  ashuc1
+   32  docker  logs  -f  ashuc1
+```
+
+### stopping a process
+
+```
+[ashu@ip-172-31-19-234 ~]$ docker   stop  ashuc1 
+ashuc1
+
+```
+
+### starting a stopped container 
+
+```
+ docker  start  ashuc1
+```
+
+###  pause 
+
+```
+docker  pause ashuc1
+
+docker  unpause ashuc1
+
+```
+
+### login to container 
+
+```
+[ashu@ip-172-31-19-234 ~]$ docker  exec  -it  ashuc1   sh 
+/ # 
+/ # 
+/ # cat  /etc/os-release 
+NAME="Alpine Linux"
+ID=alpine
+VERSION_ID=3.14.2
+PRETTY_NAME="Alpine Linux v3.14"
+HOME_URL="https://alpinelinux.org/"
+BUG_REPORT_URL="https://bugs.alpinelinux.org/"
+/ # ls
+bin    dev    etc    home   lib    media  mnt    opt    proc   root   run    sbin   srv    sys    tmp    usr    var
+/ # 
+/ # ip a
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 65536 qdisc noqueue state UNKNOWN qlen 1000
+    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00
+    inet 127.0.0.1/8 scope host lo
+       valid_lft forever preferred_lft forever
+48: eth0@if49: <BROADCAST,MULTICAST,UP,LOWER_UP,M-DOWN> mtu 1500 qdisc noqueue state UP 
+    link/ether 02:42:ac:11:00:08 brd ff:ff:ff:ff:ff:ff
+    inet 172.17.0.8/16 brd 172.17.255.255 scope global eth0
+       valid_lft forever preferred_lft forever
+/ # exit
+
+```
+
+### docker ops 
+
+<img src="dhist.png">
 
 
