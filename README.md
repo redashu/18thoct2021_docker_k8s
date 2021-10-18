@@ -20,3 +20,7 @@
 
 <img src="hypervv.png">
 
+### benefit of using vm in cloud model (CNA)
+
+<img src="cnavm.png">
+
