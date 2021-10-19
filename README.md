@@ -375,4 +375,103 @@ ashuc1
 always
 ```
 
+## Docker networking 
+
+### COncept 1 
+
+<img src="net.png">
+
+### NAT 
+
+<img src="nat.png">
+
+## Docker components with network
+
+<img src="dnet1.png">
+
+### Docker networking with BRidge (docker0)
+
+<img src="br.png">
+
+### checking ip address of container 
+
+```
+docker  inspect  ashuc1  --format='{{.NetworkSettings.IPAddress}}'
+172.17.0.2
+[ashu@ip-172-31-19-234 ashuimages]$ docker ps
+CONTAINER ID   IMAGE           COMMAND            CREATED              STATUS              PORTS     NAMES
+186e45d39a41   alpine:latest   "ping localhost"   13 seconds ago       Up 12 seconds                 parveezcg2
+ec03b0c74667   alpine          "ping localhost"   18 seconds ago       Up 17 seconds                 manic1
+012f92834cf2   alpine          "/bin/sh"          About a minute ago   Up About a minute             samarcont1
+f4e131f0d524   busybox         "sh"               About a minute ago   Up About a minute             amitcg1
+9f2a2529bd12   alpine          "/bin/sh"          2 minutes ago        Up 2 minutes                  vijaydg
+c42ad5e696ab   alpine          "/bin/sh"          2 minutes ago        Up 2 minutes                  dinesh
+6c2ade437f13   alpine          "/bin/sh"          2 minutes ago        Up 2 minutes                  nischalc1
+a758ea8da764   alpine:latest   "/bin/sh"          2 minutes ago        Up 2 minutes                  wasimnw1
+93c6b208b98d   busybox         "ping localhost"   2 minutes ago        Up 2 minutes                  raju1
+795c9ea70635   alpine          "/bin/sh"          2 minutes ago        Up 2 minutes                  vidhicg2
+47148c4af179   alpine          "/bin/sh"          2 minutes ago        Up 2 minutes                  umangc1
+e49ca01a7e0e   alpine          "/bin/sh"          2 minutes ago        Up 2 minutes                  pavan1
+bc62d0d91fd3   alpine          "/bin/sh"          2 minutes ago        Up 2 minutes                  ashuc1
+[ashu@ip-172-31-19-234 ashuimages]$ docker  inspect  parveezcg2  --format='{{.NetworkSettings.IPAddress}}'
+172.17.0.14
+
+```
+
+### checking connection 
+
+```
+[ashu@ip-172-31-19-234 ashuimages]$ docker  inspect  parveezcg2  --format='{{.NetworkSettings.IPAddress}}'
+172.17.0.14
+[ashu@ip-172-31-19-234 ashuimages]$ docker  exec -it  ashuc1  sh 
+/ # 
+/ # ping  172.17.0.14
+PING 172.17.0.14 (172.17.0.14): 56 data bytes
+64 bytes from 172.17.0.14: seq=0 ttl=255 time=0.158 ms
+64 bytes from 172.17.0.14: seq=1 ttl=255 time=0.095 ms
+64 bytes from 172.17.0.14: seq=2 ttl=255 time=0.072 ms
+64 bytes from 172.17.0.14: seq=3 ttl=255 time=0.099 ms
+64 bytes from 172.17.0.14: seq=4 ttl=255 time=0.090 ms
+^C
+--- 172.17.0.14 ping statistics ---
+5 packets transmitted, 5 packets received, 0% packet loss
+round-trip min/avg/max = 0.072/0.102/0.158 ms
+
+```
+
+### checking bridge details 
+
+```
+[ashu@ip-172-31-19-234 ashuimages]$ docker  network  ls 
+NETWORK ID     NAME      DRIVER    SCOPE
+a0aae296b56d   bridge    bridge    local
+f5bbbab2e0d0   host      host      local
+3c1fc83479d3   none      null      local
+[ashu@ip-172-31-19-234 ashuimages]$ docker  network  inspect  a0aae296b56d 
+[
+    {
+        "Name": "bridge",
+        "Id": "a0aae296b56dbaf71b263ec7e586c8c4b52a50c8cd9d1f8a481896c8cbfb5c3c",
+        "Created": "2021-10-19T03:36:22.250814513Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": null,
+            "Config": [
+                {
+                    "Subnet": "172.17.0.0/16",
+                    
+ ```
+ 
+ ### NAT in Docker Networking 
+ 
+ <img src="natd.png">
+ 
+ ### POrt forwarding 
+ 
+ <img src="portf.png">
+ 
+ 
 
