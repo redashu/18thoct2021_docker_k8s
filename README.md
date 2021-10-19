@@ -339,4 +339,40 @@ CONTAINER ID   IMAGE           COMMAND                  CREATED          STATUS 
 
 ```
 
+## Cgroups 
+
+```
+ docker run -itd  --name ashuc2  --memory 100m --cpu-shares=30  alpine
+ 
+```
+
+### restart policy 
+
+<img src="restart.png">
+
+### restart policy options 
+
+<img src="op.png">
+
+### formating json output 
+
+```
+[ashu@ip-172-31-19-234 ashuimages]$ docker  inspect  ashuc1  --format='{{.Id}}'
+68c1d396752f86181a4e2661f56004166eded81d328f8923bfda6541093eba4b
+[ashu@ip-172-31-19-234 ashuimages]$ docker  inspect  ashuc1  --format='{{.State.Status}}'
+running
+
+```
+
+### chekcing and replacing restart policy 
+
+```
+[ashu@ip-172-31-19-234 ashuimages]$ docker  inspect  ashuc1  --format='{{.HostConfig.RestartPolicy.Name}}'
+no
+[ashu@ip-172-31-19-234 ashuimages]$ docker  update  ashuc1  --restart always 
+ashuc1
+[ashu@ip-172-31-19-234 ashuimages]$ docker  inspect  ashuc1  --format='{{.HostConfig.RestartPolicy.Name}}'
+always
+```
+
 
