@@ -139,6 +139,56 @@ Welcome to Containers ..!!
 
 ```
 
+### checking resources of a container 
+
+```
+docker  stats  ashuc11
+
+
+CONTAINER ID   NAME      CPU %     MEM USAGE / LIMIT    MEM %     NET I/O      BLOCK I/O     PIDS
+351d28007c4b   ashuc11   0.01%     5.359MiB / 7.69GiB   0.07%     1.1kB / 0B   0B / 9.22kB   1
+^C
+
+===
+C
+[ashu@ip-172-31-19-234 python_apps]$ docker  stats  
+
+781499279a3   vidhic1         0.01%     5.309MiB / 7.69GiB   0.07%     920B / 0B    0B / 12.8kB   1
+112cc990c0ad   raju            0.00%     5.332MiB / 7.69GiB   0.07%     990B / 0B    0B / 18.4kB   1
+912ff1508c77   umancont11      0.00%     5.418MiB / 7.69GiB   0.07%     990B / 0B    0B / 9.22kB   1
+5215649c1a4e   manic2          0.00%     5.273MiB / 7.69GiB   0.07%     920B / 0B    0B / 19.5kB   1
+319c45a141dd   din_container   0.00%     5.066MiB / 7.69GiB   0.06%     920B / 0B    0B / 11.8kB   1
+2cde63ee598e   nischalc1       0.01%     3.047MiB / 7.69GiB   0.04%     710B / 0B    0B / 0B       1
+351d28007c4b   ashuc11         0.00%     5.359MiB / 7.69GiB   0.07%     1.1kB / 0B   0B / 9.22kB   1
+
+```
+
+
+### access container 
+
+```
+[ashu@ip-172-31-19-234 python_apps]$ docker  exec -it   ashuc11   bash 
+root@351d28007c4b:/# 
+root@351d28007c4b:/# 
+root@351d28007c4b:/# 
+root@351d28007c4b:/# cat  /etc/os-release 
+PRETTY_NAME="Debian GNU/Linux 11 (bullseye)"
+NAME="Debian GNU/Linux"
+VERSION_ID="11"
+VERSION="11 (bullseye)"
+VERSION_CODENAME=bullseye
+ID=debian
+HOME_URL="https://www.debian.org/"
+SUPPORT_URL="https://www.debian.org/support"
+BUG_REPORT_URL="https://bugs.debian.org/"
+root@351d28007c4b:/# cd  /mycode/
+root@351d28007c4b:/mycode# ls
+hello.py
+root@351d28007c4b:/mycode# 
+root@351d28007c4b:/mycode# exit
+exit
+
+```
 
 
 
