@@ -270,3 +270,73 @@ etc          lib          opt          run          sys          var
 
 ```
 
+###  Dockerfile with OL  and python support 
+
+<img src="ol.py">
+
+###  building image helper software installer 
+
+<img src="soft.png">
+
+### BUilding image 
+
+```
+]$ cd  python_apps/
+[ashu@ip-172-31-19-234 python_apps]$ ls
+Dockerfile  hello.py  oracle.dockerfile
+[ashu@ip-172-31-19-234 python_apps]$ docker  build -t  ashupython:v2  -f  oracle.dockerfile  . 
+Sending build context to Docker daemon   5.12kB
+Step 1/7 : FROM oraclelinux:8.4
+ ---> 521767a68c46
+Step 2/7 : LABEL name=ashutoshh
+ ---> Running in fc5a7d7b4fe2
+Removing intermediate container fc5a7d7b4fe2
+ ---> 3693cc171455
+Step 3/7 : LABEL email=ashutoshh@linux.com
+ ---> Running in 1dae3f70f4ab
+Removing intermediate container 1dae3f70f4ab
+ ---> 43e3b7ea1abb
+Step 4/7 : RUN yum  install python3 -y
+ ---> Running in 7e09a75cd09a
+Oracle Linux 8 BaseOS Latest (x86_64)           117 MB/s |  36 MB     00:00    
+Oracle Linux 8 Application Stream (x86_64)       79 MB
+
+```
+
+### checking images
+
+```
+[ashu@ip-172-31-19-234 python_apps]$ docker  images  |   grep -i ashu
+ashupython            v2        e2fb227b69e8   52 seconds ago       394MB
+ashupython            v1        42f66a00af17   About an hour ago    915MB
+
+```
+
+### checking build history of image 
+
+```
+[ashu@ip-172-31-19-234 python_apps]$ docker  history  ashupython:v2
+IMAGE          CREATED         CREATED BY                                      SIZE      COMMENT
+e2fb227b69e8   3 minutes ago   /bin/sh -c #(nop)  CMD ["python3" "/mycode/h…   0B        
+c14382854fd5   3 minutes ago   /bin/sh -c #(nop) ADD file:94726a4e08e7bb3ae…   239B      
+1327f9ec4fbe   3 minutes ago   /bin/sh -c mkdir  /mycode                       0B        
+e9fe39edd66f   3 minutes ago   /bin/sh -c yum  install python3 -y              148MB     
+43e3b7ea1abb   4 minutes ago   /bin/sh -c #(nop)  LABEL email=ashutoshh@lin…   0B        
+3693cc171455   4 minutes ago   /bin/sh -c #(nop)  LABEL name=ashutoshh         0B        
+521767a68c46   5 days ago      /bin/sh -c #(nop)  CMD ["/bin/bash"]            0B        
+<missing>      5 days ago      /bin/sh -c #(nop) ADD file:9bc973344d0614e05…   246MB     
+[ashu@ip-172-31-19-234 python_apps]$ docker  images  |   grep -i oracle
+
+```
+
+### CMD vs entrypoint 
+
+```
+docker  run -itd --name ashuc9 --entrypoint ping  ashupython:v6   google.com 482b4db37db01cc6c8d431068059d4499e53e2c2fe4c5c7d7e09da3d5231cafd
+[ashu@ip-172-31-19-234 python_apps]$ docker  ps
+CONTAINER ID   IMAGE           COMMAND                  CREATED          STATUS          PORTS     NAMES
+482b4db37db0   ashupython:v6   "ping google.com"        2 seconds ago    Up 1 second               ashuc9
+
+```
+
+
