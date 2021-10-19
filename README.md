@@ -474,4 +474,122 @@ f5bbbab2e0d0   host      host      local
  <img src="portf.png">
  
  
+### POrt forwarding 
 
+```
+
+[ashu@ip-172-31-19-234 ashuimages]$ docker  run -itd  --name ashuwebc1  --restart always  -p   1111:80    dockerashu/nginx:5thoct2021
+1f1c291cf5c0ac2c717088488485fe210189f46a2ef859dc2f680ae56018ef6e
+[ashu@ip-172-31-19-234 ashuimages]$ docker  ps
+CONTAINER ID   IMAGE                         COMMAND                  CREATED          STATUS          PORTS                                   NAMES
+20644307c9c3   dockerashu/nginx:5thoct2021   "/docker-entrypoint.…"   6 seconds ago    Up 5 seconds    0.0.0.0:2412->80/tcp, :::2412->80/tcp   nischalwebc1
+1f1c291cf5c0   dockerashu/nginx:5thoct2021   "/docker-entrypoint.…"   8 seconds ago    Up 7 seconds    0.0.0.0:1111->80/tcp, :::1111->80/tcp   ashuwebc1
+
+```
+
+### drawback of using docker default bridge 
+
+<img src="br111.png">
+
+### creating a new docker bridge 
+
+```
+[ashu@ip-172-31-19-234 ashuimages]$ docker  network  ls
+NETWORK ID     NAME      DRIVER    SCOPE
+a0aae296b56d   bridge    bridge    local
+f5bbbab2e0d0   host      host      local
+3c1fc83479d3   none      null      local
+[ashu@ip-172-31-19-234 ashuimages]$ docker  network  create  ashubr1 
+5af72cc7a2b572da81aaafa058cbf1c6224cacd607ae5be0bbf2b33b5f03427b
+[ashu@ip-172-31-19-234 ashuimages]$ docker  network  ls
+NETWORK ID     NAME      DRIVER    SCOPE
+5af72cc7a2b5   ashubr1   bridge    local
+a0aae296b56d   bridge    bridge    local
+
+```
+
+### checking ip range in custom bridge
+
+
+```
+ashu@ip-172-31-19-234 ashuimages]$ docker  network   inspect  ashubr1
+[
+    {
+        "Name": "ashubr1",
+        "Id": "5af72cc7a2b572da81aaafa058cbf1c6224cacd607ae5be0bbf2b33b5f03427b",
+        "Created": "2021-10-19T11:10:43.582794813Z",
+        "Scope": "local",
+        "Driver": "bridge",
+        "EnableIPv6": false,
+        "IPAM": {
+            "Driver": "default",
+            "Options": {},
+            "Config": [
+                {
+                    "Subnet": "172.18.0.0/16",
+                    "Gateway": "172.18.0.1"
+                }
+            ]
+        },
+        
+        
+  ```
+  
+ ### creating container in custom bridge
+ 
+ ```
+ [ashu@ip-172-31-19-234 ashuimages]$ docker  run -itd --name ashucc11 --network ashubr1 alpine 
+6a14cd740125ebd9e033d62faf9561cad4773ce644ae92f7b8973cf3ed67a2bb
+[ashu@ip-172-31-19-234 ashuimages]$ docker  run -itd --name ashucc22 --network ashubr1 alpine 
+9dfd2fab7956af7c48bc8540aa1fd3b446c6768204686410227c0f80eb90b8bc
+[ashu@ip-172-31-19-234 ashuimages]$ 
+
+```
+
+### checking Internal DNS 
+
+```
+[ashu@ip-172-31-19-234 ashuimages]$ docker  exec -it  ashucc11 sh 
+/ # 
+/ # ping  ashucc22
+PING ashucc22 (172.18.0.3): 56 data bytes
+64 bytes from 172.18.0.3: seq=0 ttl=255 time=0.110 ms
+64 bytes from 172.18.0.3: seq=1 ttl=255 time=0.108 ms
+64 bytes from 172.18.0.3: seq=2 ttl=255 time=0.069 ms
+64 bytes from 172.18.0.3: seq=3 ttl=255 time=0.069 ms
+^C
+--- ashucc22 ping statistics ---
+4 packets transmitted, 4 packets received, 0% packet loss
+round-trip min/avg/max = 0.069/0.089/0.110 ms
+/ # exit
+
+
+```
+
+### creating bridge with custom subnet 
+
+```
+ docker  network  create  ashubr2  --subnet  192.166.1.0/24 
+ac32bc1901fd47d6827193b35d0c2ab61708f8149adcf7c0603e72bf685b6b36
+
+```
+
+### static ip address to container 
+
+```
+ 226  docker  network  create  ashubr2  --subnet  192.166.1.0/24 
+  227  docker  run -itd --name ashucc33 --network  ashubr2 alpine 
+  228  docker  run -itd --name ashucc44 --network  ashubr2 --ip  192.166.1.100  alpine 
+  229  history 
+[ashu@ip-172-31-19-234 ashuimages]$ docker  inspect  ashucc33  |   grep -i ipad
+            "SecondaryIPAddresses": null,
+            "IPAddress": "",
+                    "IPAddress": "192.166.1.2",
+[ashu@ip-172-31-19-234 ashuimages]$ docker  inspect  ashucc44  |   grep -i ipad
+            "SecondaryIPAddresses": null,
+            "IPAddress": "",
+                    "IPAddress": "192.166.1.100",
+                    
+                    
+ ```
+ 
