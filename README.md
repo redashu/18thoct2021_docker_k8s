@@ -221,4 +221,52 @@ exit
   ```
   
   
+### killing all running containers
+
+```
+[ashu@ip-172-31-19-234 python_apps]$ docker kill  $(docker ps  -q)
+3c645a5cc4a4
+30661233c34c
+0a76cfcda5e4
+f8caf0660cd5
+7a3da97424d9
+f28d5616e6e4
+
+```
+
+### removing all containers 
+
+```
+docker rm  $(docker ps  -aq)
+```
+
+### ANSwer to first Question 
+
+```
+[ashu@ip-172-31-19-234 ashuimages]$ docker  run -itd --name ashuc1 alpine ping localhost 
+328b3e709419028baa88f480fb6c7985b9542d49bbc2ccace03e8f11aa34e5f6
+[ashu@ip-172-31-19-234 ashuimages]$ docker  run -itd --name ashuc2 alpine ping localhost 
+0c694b4bc342fcdcc84967fda9e96ba799e5c9b7e8ea83d74dcd9e2c81995e3a
+[ashu@ip-172-31-19-234 ashuimages]$ docker  exec -it ashuc1 sh 
+/ # ls
+bin    etc    lib    mnt    proc   run    srv    tmp    var
+dev    home   media  opt    root   sbin   sys    usr
+/ # echo  hello  >helloc1.txt 
+/ # ls
+bin          helloc1.txt  media        proc         sbin         tmp
+dev          home         mnt          root         srv          usr
+etc          lib          opt          run          sys          var
+/ # exit
+[ashu@ip-172-31-19-234 ashuimages]$ docker  cp   ashuc1:/helloc1.txt  . 
+[ashu@ip-172-31-19-234 ashuimages]$ ls
+helloc1.txt  python_apps
+[ashu@ip-172-31-19-234 ashuimages]$ docker  cp  helloc1.txt  ashuc2:/
+[ashu@ip-172-31-19-234 ashuimages]$ docker  exec -it  ashuc2 sh 
+/ # ls
+bin          helloc1.txt  media        proc         sbin         tmp
+dev          home         mnt          root         srv          usr
+etc          lib          opt          run          sys          var
+/ # exit
+
+```
 
