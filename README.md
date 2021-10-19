@@ -190,5 +190,35 @@ exit
 
 ```
 
+### Docker build image history 
 
+```
+83  docker  build  -t  ashupython:v1  .  
+   84  history 
+   85  docker  images
+   86  ls
+   87  docker  images
+   88  docker  run  -it  -d --name ashuc11  ashupython:v1  
+   89  docker  ps
+   90  history 
+   91  docker  ps
+   92  docker  inspect  ashupython:v1 
+   93  history 
+   94  docker ps
+   95  docker logs -f  ashuc11
+   96  history 
+   97  docker  ps
+   98  history 
+   99  docker  ps
+  100  docker  info 
+  101  docker  ps
+  102  docker  stats  ashuc11
+  103  docker  stats  
+  104  history 
+  105  docker  exec -it   ashuc11   bash 
+  106  history 
+  
+  ```
+  
+  
 
