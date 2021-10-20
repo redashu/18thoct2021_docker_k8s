@@ -318,4 +318,159 @@ exit
 
 <img src="volumes.png">
 
+## DOcker COmpose 
+
+<img src="compose.png">
+
+### Compose 
+
+<img src="compose1.png">
+
+### Installing compose on Linux CLient 
+## Docker Desktop already have compose installed
+
+```
+ 2  sudo curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/l
+ocal/bin/docker-compose
+    3  sudo chmod +x /usr/local/bin/docker-compose
+    4  sudo ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+    
+```
+
+### checking version 
+
+```
+
+ docker-compose -v
+docker-compose version 1.29.2, build 5becea4c
+
+```
+
+
+### REmove all data of docker engine 
+
+```
+351  docker  rm $(docker  ps -aq) -f
+  352  docker rmi $(docker  images -q) -f
+  353  docker  network  rm $(docker  network ls -q)
+  354  docker  volumme  rm $(docker  volume ls -q)
+  355  docker  volume  rm $(docker  volume ls -q)
+  
+```
+
+### Deploy example 1 using compose file
+
+### Example 1 
+
+```
+version: '3.8' # compose file version 
+services: # to write about container apps 
+ ashuapp1:  # name of my app 
+  image: alpine
+  container_name: ashucc1
+  command: ping fb.com 
+```
+
+```
+364  docker-compose up  -d  
+  365  docker-compose  ps
+  366  docker-compose  images
+  367  docker-compose  logs
+  368  history 
+[ashu@ip-172-31-19-234 ashucompose]$ docker-compose  ps
+ Name       Command     State   Ports
+-------------------------------------
+ashucc1   ping fb.com   Up           
+[ashu@ip-172-31-19-234 ashucompose]$ docker-compose  stop
+Stopping ashucc1 ... done
+[ashu@ip-172-31-19-234 ashucompose]$ docker-compose  ps
+ Name       Command      State     Ports
+----------------------------------------
+ashucc1   ping fb.com   Exit 137       
+
+```
+
+###  more operations 
+
+```
+[ashu@ip-172-31-19-234 ashucompose]$ docker-compose  kill
+Killing ashucc1 ... done
+[ashu@ip-172-31-19-234 ashucompose]$ docker-compose  rm
+Going to remove ashucc1
+Are you sure? [yN] y
+Removing ashucc1 ... done
+[ashu@ip-172-31-19-234 ashucompose]$ docker-compose  up -d
+Creating ashucc1 ... done
+[ashu@ip-172-31-19-234 ashucompose]$ docker-compose  ps
+ Name       Command     State   Ports
+-------------------------------------
+ashucc1   ping fb.com   Up         
+
+```
+
+### remove all containers
+
+```
+[ashu@ip-172-31-19-234 ashucompose]$ docker-compose down 
+Stopping ashucc1 ... done
+Removing ashucc1 ... done
+Removing network ashucompose_default
+
+```
+
+
+### example 2 
+
+```
+version: '3.8' # compose file version 
+services: # to write about container apps 
+ ashuwebapp: # name of first app 
+  image: dockerashu/httpd:oct20_2021v1 
+  container_name: ashuwebc1
+  ports: # same as docker run -p 5566:80 
+   - "5566:80"
+ ashuapp1:  # name of second  app 
+  image: alpine
+  container_name: ashucc1
+  command: ping fb.com 
+
+```
+
+### COmpsoe deploy 
+
+```
+[ashu@ip-172-31-19-234 ashucompose]$ docker-compose -f  compose1.yaml up  -d 
+Creating network "ashucompose_default" with the default driver
+Creating ashucc1   ... done
+Creating ashuwebc1 ... done
+[ashu@ip-172-31-19-234 ashucompose]$ docker-compose -f  compose1.yaml  ps
+  Name                 Command              State                  Ports                
+----------------------------------------------------------------------------------------
+ashucc1     ping fb.com                     Up                                          
+ashuwebc1   /bin/sh -c httpd -DFOREGROUND   Up      0.0.0.0:5588->80/tcp,:::5588->80/tcp
+
+```
+
+### DB yaml 
+
+```
+version: '3.8'
+networks: # to create network  
+ ashubrx1:  # name of bridge
+volumes: # TO create volume 
+ ashuvol1: # name of volume 
+services:
+ ashudb:
+  image: mysql
+  container_name: ashudbc1 
+  restart: always # restart policy for container 
+  environment: # ENv var for container 
+   MYSQL_ROOT_PASSWORD: oracle088 
+  volumes: # using above volume to store database & tables
+  - "ashuvol1:/var/lib/mysql/"
+  networks: # to use bridge 
+  - ashubrx1 # name of bridge 
+  
+  
+```
 
