@@ -92,4 +92,81 @@ CONTAINER ID   IMAGE               COMMAND                  CREATED         STAT
 
 ```
 
+### Image sharing 
+
+<img src="imgshare.png">
+
+### docker image name reality 
+
+<img src="imgname.png">
+
+### Docker hub understanding 
+
+<img src="hub.png">
+
+## pushing image
+
+```
+
+docker   tag  httpd:20oct2021v1         dockerashu/httpd:oct20_2021v1  
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ 
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ 
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ docker  login  
+Login with your Docker ID to push and pull images from Docker Hub. If you don't have a Docker ID, head over to https://hub.docker.com to create one.
+Username: dockerashu
+Password: 
+WARNING! Your password will be stored unencrypted in /home/ashu/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ docker  push  dockerashu/httpd:oct20_2021v1
+The push refers to repository [docker.io/dockerashu/httpd]
+c5960db6acad: Pushed 
+fb61fc01e160: Pushed 
+67d008ba80bc: Mounted from library/oraclelinux 
+oct20_2021v1: digest: sha256:9f70c1fd589d4bca9fe7a5d898e7ea47e3fbe6aa9e3e03e0507111f5ced0218a size: 951
+
+```
+
+
+### FROm diff docker engine i am pulling it 
+
+```
+
+ fire@ashutoshhs-MacBook-Air  ~  docker pull dockerashu/httpd:oct20_2021v1  
+oct20_2021v1: Pulling from dockerashu/httpd
+0b3f7bc5b3d7: Downloading     29MB/90.37MB
+863c4bacdfb3: Downloading  29.55MB/104.3MB
+536c16d52960: Download complete 
+
+```
+
+### Pushing image to OCR
+
+```
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ docker   tag  httpd:20oct2021v1     phx.ocir.io/axmbtg8judkl
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ docker   tag  httpd:20oct2021v1     phx.ocir.io/axmbtg8judkl/webapp:v1  
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ 
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ 
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ docker  login   phx.ocir.io  
+Username: axmbtg8judkl/learntechbyme@gmail.com
+Password: 
+WARNING! Your password will be stored unencrypted in /home/ashu/.docker/config.json.
+Configure a credential helper to remove this warning. See
+https://docs.docker.com/engine/reference/commandline/login/#credentials-store
+
+Login Succeeded
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$  docker  push  phx.ocir.io/axmbtg8judkl/webapp:v1
+The push refers to repository [phx.ocir.io/axmbtg8judkl/webapp]
+c5960db6acad: Pushed 
+fb61fc01e160: Pushed 
+67d008ba80bc: Pushed 
+v1: digest: sha256:9f70c1fd589d4bca9fe7a5d898e7ea47e3fbe6aa9e3e03e0507111f5ced0218a size: 951
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ 
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ docker  logout  phx.ocir.io  
+Removing login credentials for phx.ocir.io
+
+```
+
 
