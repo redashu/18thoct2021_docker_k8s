@@ -521,6 +521,30 @@ mysql> show databases;
 <img src="carch.png">
 
 
+## K8s info 
+
+<img src="k8sinfo.png">
+
+### k8s architecture level 1
+
+<img src="k8s1.png">
+
+
+### Kube-apiserver 
+
+<img src="api.png">
+
+### kube-schedular 
+
+<img src="sche.png">
+
+### Etcd : Nosql DB for persistently storing info about COntainer app 
+
+<img src="etcd.png">
+
+
+
+
 
 
 
