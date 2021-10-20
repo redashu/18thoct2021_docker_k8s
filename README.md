@@ -512,5 +512,15 @@ mysql> show databases;
 
 ```
 
+### problem with Docker / ANy runtime Engine with respect to container management 
+
+<img src="cont22.png">
+
+### COntainer orchestration 
+
+<img src="carch.png">
+
+
+
 
 
