@@ -169,4 +169,153 @@ Removing login credentials for phx.ocir.io
 
 ```
 
+## Storage for Docker engine 
+
+### attching external storage 
+
+```
+[root@ip-172-31-19-234 docker]# lsblk 
+NAME          MAJ:MIN RM  SIZE RO TYPE MOUNTPOINT
+nvme0n1       259:0    0  100G  0 disk 
+├─nvme0n1p1   259:1    0  100G  0 part /
+└─nvme0n1p128 259:2    0    1M  0 part 
+nvme1n1       259:3    0  500G  0 disk 
+[root@ip-172-31-19-234 docker]# 
+[root@ip-172-31-19-234 docker]# 
+[root@ip-172-31-19-234 docker]# 
+[root@ip-172-31-19-234 docker]# mkfs.xfs   /dev/nvme1n1 
+meta-data=/dev/nvme1n1           isize=512    agcount=4, agsize=32768000 blks
+         =                       sectsz=512   attr=2, projid32bit=1
+         =                       crc=1        finobt=1, sparse=0
+data     =                       bsize=4096   blocks=131072000, imaxpct=25
+         =                       sunit=0      swidth=0 blks
+naming   =version 2              bsize=4096   ascii-ci=0 ftype=1
+log      =internal log           bsize=4096   blocks=64000, version=2
+         =                       sectsz=512   sunit=0 blks, lazy-count=1
+realtime =none                   extsz=4096   blocks=0, rtextents=0
+[root@ip-172-31-19-234 docker]# mkdir  /mnt/oracle 
+[root@ip-172-31-19-234 docker]# mount  /dev/nvme1n1  /mnt/oracle/
+
+```
+
+### COnfiure docker storgae 
+
+```
+# cd  /etc/sysconfig/
+[root@ip-172-31-19-234 sysconfig]# ls
+acpid       clock     docker          init        modules          nfs            rpcbind      run-parts  sysstat.ioconf
+atd         console   docker-storage  irqbalance  netconsole       raid-check     rpc-rquotad  selinux
+authconfig  cpupower  htcacheclean    keyboard    network          rdisc          rsyncd       sshd
+chronyd     crond     i18n            man-db      network-scripts  readonly-root  rsyslog      sysstat
+[root@ip-172-31-19-234 sysconfig]# cat  docker
+# The max number of open files for the daemon itself, and all
+# running containers.  The default value of 1048576 mirrors the value
+# used by the systemd service unit.
+DAEMON_MAXFILES=1048576
+
+# Additional startup options for the Docker daemon, for example:
+# OPTIONS="--ip-forward=true --iptables=true"
+# By default we limit the number of open files per container
+OPTIONS="--default-ulimit nofile=32768:65536 -g  /mnt/oracle"
+
+# How many seconds the sysvinit script waits for the pidfile to appear
+# when starting the daemon.
+DAEMON_PIDFILE_TIMEOUT=10
+
+```
+
+### s
+
+```
+
+[root@ip-172-31-19-234 sysconfig]# systemctl daemon-reload 
+[root@ip-172-31-19-234 sysconfig]# systemctl restart  docker
+```
+
+### sync / migrate docker data 
+
+```
+69  rsync -avp  /var/lib/docker/ /mnt/oracle/
+   70  history 
+[root@ip-172-31-19-234 oracle]# systemctl restart  docker
+
+```
+
+###  Docker volume. 
+
+```
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ docker  volume  ls
+DRIVER    VOLUME NAME
+local     ashshuvol1
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ docker  volume  ls
+DRIVER    VOLUME NAME
+local     amitvolume1
+local     aparsvol1
+local     ashshuvol1
+local     din
+local     manivol1
+local     nischalvol1
+local     parveezvol1
+local     pavanvol1
+local     rajuvol1
+local     umanv1
+local     vidvol1
+local     wasim_vol1
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ docker  volume   inspect  ashshuvol1
+[
+    {
+        "CreatedAt": "2021-10-20T07:12:32Z",
+        "Driver": "local",
+        "Labels": {},
+        "Mountpoint": "/mnt/oracle/volumes/ashshuvol1/_data",
+        "Name": "ashshuvol1",
+        "Options": {},
+        "Scope": "local"
+    }
+]
+
+```
+
+### checking storage option 
+
+```
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ docker  run -itd --name  ashuxc1  -v   ashshuvol1:/data:rw   alpine  
+8218860bcfcb5d1338e0bcc9553551dc6dfeaa26f15b7e93d99cb85ed93b2924
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ 
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ 
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ docker  exec -it  ashuxc1  sh 
+/ # 
+/ # cd  /data
+/data # ls
+/data # mkdir  hello world
+/data # echo hello >a.txt
+/data # ls
+a.txt  hello  world
+/data # exit
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ docker  rm  ashuxc1 -f
+ashuxc1
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ 
+
+```
+
+### accessing the same volume data 
+
+```
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ docker  rm  ashuxc1 -f
+ashuxc1
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ 
+[ashu@ip-172-31-19-234 beginner-html-site-styled]$ docker run -it --rm  -v   ashshuvol1:/new:ro   oraclelinux:8.4  bash 
+[root@4d23aa5a3bd3 /]# 
+[root@4d23aa5a3bd3 /]# 
+[root@4d23aa5a3bd3 /]# cd  /new/
+[root@4d23aa5a3bd3 new]# ls
+a.txt  hello  world
+[root@4d23aa5a3bd3 new]# exit
+exit
+
+```
+### Docker volume mounts options 
+
+<img src="volumes.png">
+
 
