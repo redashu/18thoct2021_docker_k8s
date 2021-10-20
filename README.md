@@ -473,4 +473,44 @@ services:
   
   
 ```
+### login to DB container 
+
+```
+ashu@ip-172-31-19-234 ashucompose]$ docker-compose -f  db.yml  ps
+  Name               Command             State          Ports       
+--------------------------------------------------------------------
+ashudbc1   docker-entrypoint.sh mysqld   Up      3306/tcp, 33060/tcp
+[ashu@ip-172-31-19-234 ashucompose]$ 
+[ashu@ip-172-31-19-234 ashucompose]$ 
+[ashu@ip-172-31-19-234 ashucompose]$ docker  exec  -it  ashudbc1   bash 
+root@9693b14c857b:/# 
+root@9693b14c857b:/# mysql  -u root -p
+Enter password: 
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 8.0.27 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2021, Oracle and/or its affiliates.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> show databases;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set (0.01 sec)
+
+
+```
+
+
 
