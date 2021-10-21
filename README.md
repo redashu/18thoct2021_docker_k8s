@@ -200,4 +200,166 @@ Removing login credentials for https://index.docker.io/v1/
 
 ```
 
+## First POD file 
+
+```
+apiVersion: v1 # kube-apiversion for POD request 
+kind: Pod  # we are requesting for Pod 
+metadata: # info about POd like name , annotation etc
+ name: ashupod-javaweb 
+spec: # about app info like - container , volume , secuirty , logging 
+ containers: 
+ - name: ashuc1 # name of container 
+   image: dockerashu/javawebapp:v1 # image name from Dockerhub 
+   ports: # to define container app port (optional)
+   - containerPort: 8080 
+
+
+```
+
+### Deploying POD and checking 
+
+```
+ kubectl  apply -f  ashupod1.yaml 
+pod/ashupod-javaweb created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  get  pods
+NAME                 READY   STATUS             RESTARTS   AGE
+ashupod-javaweb      1/1     Running            0          31s
+manipod-javaweb      1/1     Running            0          20s
+
+```
+
+### checking pod scheduling node
+
+```
+ kubectl  get  nodes
+NAME         STATUS   ROLES                  AGE     VERSION
+masternode   Ready    control-plane,master   3h37m   v1.22.2
+node1        Ready    <none>                 3h35m   v1.22.2
+node2        Ready    <none>                 3h35m   v1.22.2
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  get  po  ashupod-javaweb  -o wide
+NAME              READY   STATUS    RESTARTS   AGE     IP              NODE    NOMINATED NODE   READINESS GATES
+ashupod-javaweb   1/1     Running   0          8m54s   192.168.104.2   node2   <none>           <none>
+
+```
+
+###  all POd 
+
+```
+kubectl  get  po   -o wide
+NAME                  READY   STATUS    RESTARTS   AGE     IP                NODE    NOMINATED NODE   READINESS GATES
+aparspod-javaweb      1/1     Running   0          3m15s   192.168.104.12    node2   <none>           <none>
+ashupod-javaweb       1/1     Running   0          10m     192.168.104.2     node2   <none>           <none>
+dines-javaweb         1/1     Running   0          8m22s   192.168.166.132   node1   <none>           <none>
+manipod-javaweb       1/1     Running   0          10m     192.168.104.3     node2   <none>           <none>
+```
+
+### getting more details about POD 
+
+```
+ kubectl  describe pod  ashupod-javaweb  
+Name:         ashupod-javaweb
+Namespace:    default
+Priority:     0
+Node:         node2/172.31.14.254
+Start Time:   Thu, 21 Oct 2021 12:02:43 +0530
+Labels:       <none>
+Annotations:  cni.projectcalico.org/containerID: 3da066dc44a4769a8100ad8ec1370a04d3c16de360428a7aef1fe91400bbc959
+              cni.projectcalico.org/podIP: 192.168.104.2/32
+              cni.projectcalico.org/podIPs: 192.168.104.2/32
+Status:       Running
+IP:           192.168.104.2
+IPs:
+  IP:  192.168.104.2
+Containers:
+  ashuc1:
+    Container ID:   docker://d58d3f3fe334920ea5bb71dfe8028bdf9363d33d1cb98b4daf8c77da485f1600
+    Image:          dockerashu/javawebapp:v1
+    Image ID:       docker-pullable://dockerashu/javawebapp@sha256:06c4d0c690190703ab2d070c4b587ce0cfed9db58b2cfc3079fe9bd9f8f26805
+    Port:           8080/TCP
+    Host Port:      0/TCP
+    State:          Running
+      Started:      Thu, 21 Oct 2021 12:03:00 +0530
+    Ready:          True
+    Restart Count:  0
+```
+### accessing app locally 
+
+```
+kubectl  port-forward  ashupod-javaweb    1122:8080
+Forwarding from 127.0.0.1:1122 -> 8080
+Forwarding from [::1]:1122 -> 8080
+Handling connection for 1122
+Handling connection for 1122
+```
+
+### Deleting pod 
+
+```
+kubectl  delete  pod  ashupod-javaweb
+pod "ashupod-javaweb" deleted
+```
+
+##
+
+```
+kubectl  delete pods --all
+pod "aparspod-javaweb" deleted
+pod "dines-javaweb" deleted
+pod "manipod-javaweb" deleted
+pod "meghapod-javaweb" deleted
+pod "parveezpod-javaweb" deleted
+pod "vidhipod-javaweb" deleted
+```
+
+### kubectl port-forward explain 
+
+<img src="portf.png">
+### auto generate yaml / json 
+
+```
+kubectl  run  ashupod1  --image=alpine  --dry-run=client -o yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: ashupod1
+  name: ashupod1
+spec:
+  containers:
+  - image: alpine
+    name: ashupod1
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
+```
+
+##
+
+```
+kubectl  run  ashupod1  --image=alpine  --dry-run=client -o yaml >auto.yaml
+```
+## alpine image and parent process
+
+<img src="al.png">
+
+### deploy pod yaml 
+
+```
+fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl apply -f  auto.yaml 
+pod/ashupod1 created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  get  po
+NAME          READY   STATUS    RESTARTS   AGE
+ashupod1      1/1     Running   0          9s
+nischalpod1   1/1     Running   0          6s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  get  po -o wide
+NAME            READY   STATUS             RESTARTS     AGE   IP                NODE    NOMINATED NODE   READINESS GATES
+ashupod1        1/1     Running            0            26s   192.168.104.14    node2   <none>           <none>
+maniod2         0/1     CrashLoopBackOff   1 (7s ago)   9s    192.168.104.16    node2   <none>           <none>
+meghapod1       1/1     Running            0            14s   192.168.166.139   node1   <none>           <none>
+nischalpod1     1/1     Running        
+
+```
 
