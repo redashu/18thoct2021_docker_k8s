@@ -362,4 +362,28 @@ meghapod1       1/1     Running            0            14s   192.168.166.139   
 nischalpod1     1/1     Running        
 
 ```
+### access container inside pod 
 
+```
+kubectl  exec -it  ashupod1  -- sh 
+/ # 
+/ # 
+/ # 
+/ # ls
+bin    dev    etc    home   lib    media  mnt    opt    proc   root   run    sbin   srv    sys    tmp    usr    var
+/ # cat  /etc/os-release 
+NAME="Alpine Linux"
+ID=alpine
+VERSION_ID=3.14.2
+PRETTY_NAME="Alpine Linux v3.14"
+HOME_URL="https://alpinelinux.org/"
+BUG_REPORT_URL="https://bugs.alpinelinux.org/"
+/ # exit
+```
+
+### checking output 
+
+```
+kubectl  logs  -f  ashupod1
+
+```
