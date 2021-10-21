@@ -501,4 +501,19 @@ round-trip min/avg/max = 0.527/0.747/1.183 ms
 ## CNI networking 
 <img src="podnet.png">
 
+## POd networking 
+<img src="podnet1.png">
+
+###  Pod networking 
+
+<img src="podnet2.png">
+
+## Intro to service in k8s 
+
+<img src="svc.png">
+
+### Svc type 
+
+<img src="stype.png">
+
 
