@@ -1,0 +1,10 @@
+apiVersion: v1 # kube-apiversion for POD request 
+kind: Pod  # we are requesting for Pod 
+metadata: # info about POd like name , annotation etc
+ name: ashupod-javaweb 
+spec: # about app info like - container , volume , secuirty , logging 
+ containers: 
+ - name: ashuc1 # name of container 
+   image: dockerashu/javawebapp:v1 # image name from Dockerhub 
+   ports: # to define container app port (optional)
+   - containerPort: 8080 
