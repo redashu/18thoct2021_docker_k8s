@@ -127,6 +127,10 @@ node2        Ready    <none>                 138m   v1.22.2
 
 ```
 
+### Intro to POD 
+
+<img src="pod.png">
+
 
 
 
