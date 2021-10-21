@@ -3,15 +3,14 @@ kind: Pod
 metadata:
   creationTimestamp: null
   labels:
-    run: hello
-  name: ashupod1 # name of POD
-  namespace: ashu-space # custom namespace {it must be existing}
+    run: ashupod1
+  name: ashupod1 # name of POD 
 spec:
   containers:
-  - image: alpine # image name 
+  - image: busybox # image name 
     name: ashupod1 # container name 
     command: ["sh","-c","ping fb.com"] # to give any parent process we use command 
     resources: {}
   dnsPolicy: ClusterFirst
   restartPolicy: Always
-
+status: {}
