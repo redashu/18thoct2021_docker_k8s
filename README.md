@@ -387,3 +387,118 @@ BUG_REPORT_URL="https://bugs.alpinelinux.org/"
 kubectl  logs  -f  ashupod1
 
 ```
+## Namespace COncept 
+<img src="ns.png">
+
+### Default namesapces in k8s
+
+```
+kubectl  get  namespaces
+NAME                   STATUS   AGE
+default                Active   6h20m
+kube-node-lease        Active   6h20m
+kube-public            Active   6h20m
+kube-system            Active   6h20m
+```
+## kube-system namespace 
+<img src="sys.png">
+
+### 
+```
+kubectl  get  pods  -n  kube-system 
+NAME                                       READY   STATUS    RESTARTS   AGE
+calico-kube-controllers-75f8f6cc59-l9w6s   1/1     Running   0          6h22m
+calico-node-4tkw4                          1/1     Running   0          6h22m
+calico-node-qqfqg                          1/1     Running   0          6h22m
+calico-node-vdgqf                          1/1     Running   0          6h22m
+coredns-78fcd69978-t49b2                   1/1     Running   0          6h23m
+coredns-78fcd69978-wc9xf                   1/1     Running   0          6h23m
+etcd-masternode                            1/1     Running   0          6h23m
+kube-apiserver-masternode                  1/1     Running   0          6h23m
+kube-controller-manager-masternode         1/1     Running   0          6h23m
+kube-proxy-7n897                           1/1     Running   0          6h23m
+kube-proxy-chdhz                           1/1     Running   0          6h22m
+kube-proxy-gvg5w                           1/1     Running   0          6h22m
+kube-scheduler-masternode                  1/1     Running   0          6h23m
+metrics-server-6fb5c69669-zfxl2            1/1     Running   0          6h20m
+```
+
+### creating namespace 
+```
+fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  create  namespace  ashu-space 
+namespace/ashu-space created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  get  ns
+NAME                   STATUS   AGE
+ashu-space             Active   11s
+```
+### Deploy pod in custom namespace and checking it
+```
+fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl apply -f  auto.yaml 
+pod/ashupod1 created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl get  po            
+No resources found in default namespace.
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl get  po -n ashu-space 
+NAME       READY   STATUS    RESTARTS   AGE
+ashupod1   1/1     Running   0          18s
+```
+
+### Delete pod
+```
+kubectl  delete   po  ashupod1 -n ashu-space 
+pod "ashupod1" deleted
+```
+
+### setting default namespace 
+
+```
+kubectl config set-context  --current --namespace=ashu-space 
+Context "kubernetes-admin@kubernetes" modified.
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  config get-contexts                                 
+CURRENT   NAME                          CLUSTER      AUTHINFO           NAMESPACE
+*         kubernetes-admin@kubernetes   kubernetes   kubernetes-admin   ashu-space
+```
+## Creating webapp POD 
+
+```
+kubectl  run webpod1  --image=dockerashu/httpd:oct20_2021v1  --port 80  --dry-run=client -o yaml  >webapp.yaml
+```
+
+## K8s Networking 
+
+### Nodes networking 
+
+<img src="node.png">
+
+###  COntainer networking Models
+
+<img src="cn.png">
+
+### list of CNI 
+<img src="list.png">
+
+### checking pod connection 
+
+```
+fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  get po -o wide
+NAME       READY   STATUS    RESTARTS   AGE   IP                NODE    NOMINATED NODE   READINESS GATES
+ashupod1   1/1     Running   0          33m   192.168.104.55    node2   <none>           <none>
+webpod1    1/1     Running   0          23m   192.168.166.178   node1   <none>           <none>
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  exec -it  ashupod1  -- sh 
+/ # 
+/ # ping  192.168.166.178 
+PING 192.168.166.178 (192.168.166.178): 56 data bytes
+64 bytes from 192.168.166.178: seq=0 ttl=253 time=0.527 ms
+64 bytes from 192.168.166.178: seq=1 ttl=253 time=1.183 ms
+64 bytes from 192.168.166.178: seq=2 ttl=253 time=0.533 ms
+^C
+--- 192.168.166.178 ping statistics ---
+3 packets transmitted, 3 packets received, 0% packet loss
+round-trip min/avg/max = 0.527/0.747/1.183 ms
+/ # exit
+
+```
+## CNI networking 
+<img src="podnet.png">
+
+
