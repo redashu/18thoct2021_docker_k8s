@@ -98,4 +98,200 @@ NAME     TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
 ashus1   NodePort   10.105.229.142   <none>        1234:32328/TCP   8s
 
 ```
+### deploy pod ,svc using single yaml file 
+
+```
+kubectl  get  po,svc
+NAME          READY   STATUS    RESTARTS   AGE
+pod/webpod1   1/1     Running   0          17s
+
+NAME             TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+service/ashus1   NodePort   10.109.227.189   <none>        1234:31291/TCP   16s
+
+```
+
+### cleaning up my namespace 
+
+```
+kubectl  delete  all --all 
+pod "webpod1" deleted
+service "ashus1" deleted
+
+```
+
+## Replication controller
+
+<img src="rc.png">
+
+### Template for POD 
+
+<img src="podtemp.png">
+
+### deploying rc 
+
+```
+fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  apply -f  ashurc1.yaml 
+replicationcontroller/ashurc-app created
+service/ashus1 created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  get  rc
+NAME         DESIRED   CURRENT   READY   AGE
+ashurc-app   1         1         1       10s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  get  po 
+NAME               READY   STATUS    RESTARTS   AGE
+ashurc-app-vssdc   1/1     Running   0          19s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  get  svc
+NAME     TYPE       CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+ashus1   NodePort   10.107.126.242   <none>        1234:30205/TCP   23s
+
+```
+
+## scaling POD manually 
+
+```
+  0          34m   x1=ashuapp1
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  scale rc  ashurc-app --replicas=3
+replicationcontroller/ashurc-app scaled
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  get  po --show-labels            
+NAME               READY   STATUS    RESTARTS   AGE   LABELS
+ashurc-app-77p4g   1/1     Running   0          61s   x1=ashuapp1
+ashurc-app-p4g54   1/1     Running   0          5s    x1=ashuapp1
+ashurc-app-vssdc   1/1     Running   0          35m   x1=ashuapp1
+
+```
+
+### Intro to deployment 
+
+<img src="dep.png">
+
+### creating deployment YAML 
+
+```
+kubectl  create deployment  ashuwebapp --image=phx.ocir.io/axmbtg8judkl/oracleweb:v1    --dry-run=client -o yaml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashuwebapp
+  name: ashuwebapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashuwebapp
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ashuwebapp
+    spec:
+      containers:
+      - image: phx.ocir.io/axmbtg8judkl/oracleweb:v1
+        name: oracleweb
+        resources: {}
+status: {}
+
+==
+
+kubectl  create deployment  ashuwebapp --image=phx.ocir.io/axmbtg8judkl/oracleweb:v1    --dry-run=client -o yaml   >webdep.yaml
+
+```
+
+### sample deployment file 
+
+```
+apiVersion: apps/v1 # apiVersion 
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels: # label of deployment 
+    app: ashuwebapp
+  name: ashuwebapp # name of Deployment 
+spec:
+  replicas: 1 # number of POD 
+  selector:
+    matchLabels:
+      app: ashuwebapp
+  strategy: {}
+  template: # like RC deployment will also use template 
+    metadata:
+      creationTimestamp: null
+      labels: # label of POD 
+        app: ashuwebapp
+    spec:
+      containers:
+      - image: phx.ocir.io/axmbtg8judkl/oracleweb:v1 # name of docker image 
+        name: oracleweb # name of container 
+        resources: {}
+status: {}
+
+
+```
+
+###  error in pulling private registry image by k8s
+
+```
+fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl get deploy
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+ashuwebapp   0/1     1            0           107s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl get  po   
+NAME                         READY   STATUS         RESTARTS   AGE
+ashurc-app-gl6s5             1/1     Running        0          30m
+ashuwebapp-74d5f5bc5-p5nfc   0/1     ErrImagePull   0          116s
+
+```
+
+### Intro to secret in k8s
+
+<img src="k8ssec.png">
+
+### creating secret 
+
+```
+kubectl  create  secret  
+Create a secret using specified subcommand.
+
+Available Commands:
+  docker-registry Create a secret for use with a Docker registry
+  generic         Create a secret from a local file, directory or literal value
+  tls             Create a TLS secret
+
+Usage:
+
+```
+
+====
+```
+kubectl  create  secret  docker-registry  ashuappsec   --docker-server  phx.ocir.io  --docker-username  axmbdkl/learhbyme@gmail.com   --docker-password="dh4iw{"
+```
+
+### creating Loadbalancer 
+
+<img src="lb.png">
+
+### creating service using expose method 
+
+```
+
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  get  deploy
+NAME         READY   UP-TO-DATE   AVAILABLE   AGE
+ashuwebapp   1/1     1            1           5m9s
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  expose deployment  ashuwebapp  --type LoadBalancer --port 80 --name  ashulbsvc 
+service/ashulbsvc exposed
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  get  svc
+NAME        TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+ashulbsvc   LoadBalancer   10.99.220.86     <pending>     80:31288/TCP     8s
+ashus1      NodePort       10.107.126.242   <none>        1234:30205/TCP   91m
+
+```
+
+### External DNS and Loadbalancer with Kubernetes 
+
+<img src="lbc.png">
+
+## Loadbalancer service reality
+
+<img src="lbreal.png">
 
