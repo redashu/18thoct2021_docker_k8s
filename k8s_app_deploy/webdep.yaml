@@ -20,7 +20,11 @@ spec:
       imagePullSecrets: # to call secret in current namespace 
       - name: ashuappsec # name of secret 
       containers:
-      - image: phx.ocir.io/axmbtg8judkl/oracleweb:v1 # name of docker image 
+      - image: dockerashu/httpd:oct20_2021v1 # name of docker image 
         name: oracleweb # name of container 
-        resources: {}
+        resources: # restrict vertical scaling 
+         requests:
+          cpu: 300m  # milicore  1 core cpu -- 1000 mili core 
+         limits:
+          cpu: 500m 
 status: {}
