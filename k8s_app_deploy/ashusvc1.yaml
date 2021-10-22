@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels: # service label 
+    app: ashus1
+  name: ashus1 # name of service 
+spec:
+  ports:
+  - name: 1234-80
+    port: 1234 # service POrt which will be binded with ServiceIP:1234 
+    protocol: TCP
+    targetPort: 80 # targetPOd app port 
+  selector: #  Finding POd using label 
+    x1: ashuapp1 # exact label of POd 
+  type: NodePort # type of service 
+status:
+  loadBalancer: {}

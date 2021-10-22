@@ -1,0 +1,40 @@
+apiVersion: v1
+kind: ReplicationController 
+metadata:
+  creationTimestamp: null
+  labels: # label of RC (key: value)
+    x2: ashurc1  # key: value pair is user define 
+  name: ashurc-app # name of RC 
+spec:
+ replicas: 2  # no of pod we want to deploy 
+ template: # it will use template of POD to create number of pod defined above
+  metadata:
+   creationTimestamp: null
+   labels: # label of POd (key: value)
+    x1: ashuapp1  # key: value pair is user define 
+  spec:
+   containers:
+   - image: dockerashu/httpd:oct20_2021v1 # docker image 
+     name: ashuc2333 # name of container 
+     ports: # pod app port number 
+     - containerPort: 80
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels: # service label 
+    app: ashus1
+  name: ashus1 # name of service 
+spec:
+  ports:
+  - name: 1234-80
+    port: 1234 # service POrt which will be binded with ServiceIP:1234 
+    protocol: TCP
+    targetPort: 80 # targetPOd app port 
+  selector: #  Finding POd using label 
+    x1: ashuapp1 # exact label of POd 
+  type: NodePort # type of service 
+status:
+  loadBalancer: {}

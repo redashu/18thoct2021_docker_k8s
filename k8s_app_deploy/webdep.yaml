@@ -1,0 +1,26 @@
+apiVersion: apps/v1 # apiVersion 
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels: # label of deployment 
+    app: ashuwebapp
+  name: ashuwebapp # name of Deployment 
+spec:
+  replicas: 1 # number of POD 
+  selector:
+    matchLabels:
+      app: ashuwebapp
+  strategy: {}
+  template: # like RC deployment will also use template 
+    metadata:
+      creationTimestamp: null
+      labels: # label of POD 
+        app: ashuwebapp
+    spec:
+      imagePullSecrets: # to call secret in current namespace 
+      - name: ashuappsec # name of secret 
+      containers:
+      - image: phx.ocir.io/axmbtg8judkl/oracleweb:v1 # name of docker image 
+        name: oracleweb # name of container 
+        resources: {}
+status: {}

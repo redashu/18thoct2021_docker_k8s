@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  creationTimestamp: null
+  labels:
+    run: ashupod1
+  name: ashupod1 # name of POD 
+spec:
+  containers:
+  - image: busybox # image name 
+    name: ashupod1 # container name 
+    command: ["sh","-c","ping fb.com"] # to give any parent process we use command 
+    resources: {}
+  dnsPolicy: ClusterFirst
+  restartPolicy: Always
+status: {}
