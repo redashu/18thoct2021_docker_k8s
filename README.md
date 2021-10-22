@@ -295,3 +295,266 @@ ashus1      NodePort       10.107.126.242   <none>        1234:30205/TCP   91m
 
 <img src="lbreal.png">
 
+### Cleaning up namespace data 
+
+```
+ubectl  delete  all --all
+pod "ashurc-app-gl6s5" deleted
+pod "ashuwebapp-76778ff688-pr5mx" deleted
+pod "ashuwebapp-76778ff688-t9jwx" deleted
+pod "ashuwebapp-76778ff688-wp5x9" deleted
+replicationcontroller "ashurc-app" deleted
+service "ashulbsvc" deleted
+service "ashus1" deleted
+deployment.apps "ashuwebapp" deleted
+
+```
+
+### Use kubeconfig file for managing multiple clusters
+
+```
+fire@ashutoshhs-MacBook-Air  ~  kubectl  get  nodes
+NAME       STATUS   ROLES                  AGE    VERSION
+minikube   Ready    control-plane,master   3m8s   v1.22.2
+ fire@ashutoshhs-MacBook-Air  ~  
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  config  get-contexts  
+CURRENT   NAME                          CLUSTER      AUTHINFO           NAMESPACE
+          kubernetes-admin@kubernetes   kubernetes   kubernetes-admin   ashu-space
+*         minikube                      minikube     minikube           default
+ fire@ashutoshhs-MacBook-Air  ~  
+ fire@ashutoshhs-MacBook-Air  ~  
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  config use-context  kubernetes-admin@kubernetes
+Switched to context "kubernetes-admin@kubernetes".
+ fire@ashutoshhs-MacBook-Air  ~  
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  get  nodes                                     
+NAME         STATUS   ROLES                  AGE   VERSION
+masternode   Ready    control-plane,master   30h   v1.22.2
+node1        Ready    <none>                 30h   v1.22.2
+node2        Ready    <none>                 30h   v1.22.2
+ fire@ashutoshhs-MacBook-Air  ~  
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  config use-context  minikube                   
+Switched to context "minikube".
+ fire@ashutoshhs-MacBook-Air  ~  kubectl  get  nodes                  
+NAME       STATUS   ROLES                  AGE     VERSION
+minikube   Ready    control-plane,master   5m15s   v1.22.2
+
+```
+
+### Scaling in k8s 
+
+<img src="scale.png">
+### manual horizental scaling 
+
+```
+kubectl  scale deploy ashuwebapp --replicas=3
+deployment.apps/ashuwebapp scaled
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  get po -o wide                      
+NAME                          READY   STATUS    RESTARTS   AGE     IP                NODE    NOMINATED NODE   READINESS GATES
+ashuwebapp-65d84dcb54-ghcrm   1/1     Running   0          9m31s   192.168.166.183   node1   <none>           <none>
+ashuwebapp-65d84dcb54-kfktj   1/1     Running   0          3s      192.168.166.172   node1   <none>           <none>
+ashuwebapp-65d84dcb54-wf688   1/1     Running   0          3s      192.168.166.177   node1 
+
+```
+
+## HPA 
+
+<img src="hpa.png">
+
+### desing HPA 
+
+```
+kubectl autoscale deployment   ashuwebapp --min=3 --max=50 --cpu-percent=80
+horizontalpodautoscaler.autoscaling/ashuwebapp autoscaled
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  get  hpa
+NAME         REFERENCE               TARGETS         MINPODS   MAXPODS   REPLICAS   AGE
+ashuwebapp   Deployment/ashuwebapp   <unknown>/80%   3         50        1          17s
+
+```
+## Storage in K8s 
+
+<img src="st.png">
+
+### webapp of web  and DB 
+
+<img src="webdb.png">
+
+### Webapp with DB 
+
+### creating deployment for mysql db 
+
+### creating secret 
+
+```
+kubectl  create  secret  generic  ashudbsec  --from-literal  sqlpass=Oracle099       --dry-run=client -o yaml 
+apiVersion: v1
+data:
+  sqlpass: T3JhY2xlMDk5
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: ashudbsec
+
+```
+
+### 
+
+```
+kubectl  create  deployment   ashudb --image=mysql:5.6   --dry-run=client -o yaml
+
+===
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashudb
+  name: ashudb # name of deployment 
+spec:
+  replicas: 1 # number of pod 
+  selector:
+    matchLabels:
+      app: ashudb
+  strategy: {}
+  template: # to create POd will use template 
+    metadata:
+      creationTimestamp: null
+      labels: # label of Db pod 
+        app: ashudb
+    spec:
+      volumes: # to create volume in k8s
+      - name: ashudbvol  # name of volume 
+        nfs: # source of volume storage is NFS 
+         server: 172.31.19.234 # ipaddress of NFS server 
+         path: /data/ashu # storage location on NFS server 
+      containers:
+      - image: mysql:5.6 # image from docker hub 
+        name: ashuc1  # name of container 
+        volumeMounts: # to mount the volume we created Above 
+        - name: ashudbvol # name of volume to attach 
+          mountPath: /var/lib/mysql/ # default location of mysql DB 
+        env: # to create or user ENV variable 
+        - name: MYSQL_ROOT_PASSWORD
+          valueFrom: # calling secret to fetch password info 
+           secretKeyRef:
+            name: ashudbsec # name of secret 
+            key: sqlpass # key of secret 
+        resources: {}
+status: {}
+
+
+```
+
+## apply 
+
+```
+kubectl apply -f  finalapp.yaml 
+secret/ashudbsec created
+deployment.apps/ashudb created
+
+```
+
+### creating db service 
+
+```
+kubectl  expose deploy  ashudb  --type ClusterIP  --port 3306 --dry-run=client   -o yaml 
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashudb
+  name: ashudb
+spec:
+  ports:
+  - port: 3306
+    protocol: TCP
+    targetPort: 3306
+  selector:
+    app: ashudb
+  type: ClusterIP
+status:
+  loadBalancer: {}
+  
+ ```
+  
+ ### deploy 
+ 
+ ```
+ kubectl apply -f  finalapp.yaml 
+secret/ashudbsec configured
+deployment.apps/ashudb configured
+service/ashudb created
+ fire@ashutoshhs-MacBook-Air  ~/Desktop/k8s_app_deploy  kubectl  get  svc
+NAME     TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)    AGE
+ashudb   ClusterIP   10.100.206.141   <none>        3306/TCP   10s
+
+```
+
+### creating webapp to connect DB 
+
+```
+kubectl  create  deployment  ashuwebapp  --image=wordpress:4.8-apache  --dry-run=client  -o yaml 
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashuwebapp
+  name: ashuwebapp
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: ashuwebapp
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: ashuwebapp
+    spec:
+      containers:
+      - image: wordpress:4.8-apache
+        name: wordpress
+        resources: {}
+status: {}
+
+
+```
+
+### webapp 
+
+```
+kubectl apply -f  finalapp.yaml 
+secret/ashudbsec configured
+deployment.apps/ashudb configured
+service/ashudb configured
+deployment.apps/ashuwebapp created
+
+```
+
+### service deploy
+
+```
+kubectl  expose deploy  ashuwebapp  --type NodePort --port 80 --dry-run=client -o yaml 
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  labels:
+    app: ashuwebapp
+  name: ashuwebapp
+spec:
+  ports:
+  - port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    app: ashuwebapp
+  type: NodePort
+status:
+  loadBalancer: {}
+  
+ ```
+ 
+ 
